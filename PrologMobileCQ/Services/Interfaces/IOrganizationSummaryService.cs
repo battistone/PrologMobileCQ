@@ -9,5 +9,6 @@ namespace PrologMobileCQ.Services.Interfaces
     public interface IOrganizationSummaryService
     {
         Task<List<T>> DeserializeDataIntoListOfClass<T>(string endpoint);
+        Task ReturnASummaryForEachOrganization();
     }
 }

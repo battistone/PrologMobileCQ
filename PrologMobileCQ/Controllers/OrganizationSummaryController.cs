@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using PrologMobileCQ.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +8,21 @@ using System.Threading.Tasks;
 
 namespace PrologMobileCQ.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class OrganizationSummaryController : Controller
     {
-        public IActionResult PhoneBreakdownReport()
+        private readonly IOrganizationSummaryService _organizationSummaryService;
+        private readonly ILogger<OrganizationSummaryController> _logger;
+        public OrganizationSummaryController(IOrganizationSummaryService organizationSummaryService, ILogger<OrganizationSummaryController> logger)
         {
+            _organizationSummaryService = organizationSummaryService;
+            _logger = logger;
+        }
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            await _organizationSummaryService.ReturnASummaryForEachOrganization();
             return View();
         }
     }
