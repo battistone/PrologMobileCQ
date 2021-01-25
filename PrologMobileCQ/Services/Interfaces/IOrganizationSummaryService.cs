@@ -1,11 +1,13 @@
-﻿using System;
+﻿using PrologMobileCQ.Models.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PrologMobileCQ.Services.Interfaces
 {
-    interface IOrganizationSummaryService
+    public interface IOrganizationSummaryService
     {
+        Task<List<T>> DeserializeDataIntoListOfClass<T>(string endpoint);
     }
 }
