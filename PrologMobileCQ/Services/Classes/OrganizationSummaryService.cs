@@ -50,20 +50,24 @@ namespace PrologMobileCQ.Services.Classes
                                   join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
                                   where regUser.OrganizationID == org.ID
                                   select new { ID = regUser.ID }).ToList().Count().ToString();
-                tmp.Users = (from regUser in regUserList
+                tmp.Users = 
+                               
+                             (from regUser in regUserList
                              join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
                              where regUser.OrganizationID == org.ID
                              // PHONE count is gonna be a subquery
-                             select new UserSummaryDto { ID = regUser.ID, Email = regUser.Email, PhoneCount = -1 }).ToList();
+                             select new { ID = regUser.ID, Email = regUser.Email, PhoneIMEI = phoneInfo.IMEI })
+                             .ToList().GroupBy(a => new { a.ID, a.Email })
+                             .Select(x => new UserSummaryDto
+                             {
+                                 ID = x.Key.ID,
+                                 Email = x.Key.Email,
+                                 PhoneCount = x.Select(z => z.PhoneIMEI).Distinct().Count()
+                             }).ToList();
+
 
                 summarize.Add(tmp);
             }
-            // Use Linq to join these.
-            List<JoinedPhoneData> joinedPhoneData = (from organization in organizationList
-                        join regUser in regUserList on organization.ID equals regUser.OrganizationID
-                        join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
-                        select new JoinedPhoneData{ ID = organization.ID, Name = organization.Name, BlacklistState = phoneInfo.Blacklist, RegisteredUser = regUser.Name, RegisteredUserID = regUser.ID, RegisteredUserEmail = regUser.Email, RegisteredUserPhoneIMEI = phoneInfo.IMEI }).ToList();
-            var test = "hi";
         }
     }
 }
