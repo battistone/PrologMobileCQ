@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrologMobileCQ", "PrologMobileCQ\PrologMobileCQ.csproj", "{8CCB1BC8-A99A-4B77-99CF-1375F9E69BB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrologMobileCQ.Tests", "PrologMobileCQ.Tests\PrologMobileCQ.Tests.csproj", "{15FB70B1-D59D-49AE-A15F-5D3AE9CADE9B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CCB1BC8-A99A-4B77-99CF-1375F9E69BB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CCB1BC8-A99A-4B77-99CF-1375F9E69BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CCB1BC8-A99A-4B77-99CF-1375F9E69BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CCB1BC8-A99A-4B77-99CF-1375F9E69BB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15FB70B1-D59D-49AE-A15F-5D3AE9CADE9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15FB70B1-D59D-49AE-A15F-5D3AE9CADE9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15FB70B1-D59D-49AE-A15F-5D3AE9CADE9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15FB70B1-D59D-49AE-A15F-5D3AE9CADE9B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73399FC0-C7F8-4F2E-AD57-C6F46F0E3BC9}
+	EndGlobalSection
+EndGlobal
