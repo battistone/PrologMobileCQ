@@ -17,7 +17,7 @@ namespace PrologMobileCQ.Tests
             var oss = new OrganizationSummaryService();
             string authFundEP = CommonEndpointStrings.AuthFundEndpoint;
             // Act
-            List<OrganizationDto> organizations = await oss.DeserializeDataIntoListOfClass<OrganizationDto>(authFundEP);
+            IList<OrganizationDto> organizations = await oss.DeserializeDataIntoListOfClass<OrganizationDto>(authFundEP);
             // Assert
             Assert.IsTrue(organizations != null);
 
@@ -32,7 +32,7 @@ namespace PrologMobileCQ.Tests
             var oss = new OrganizationSummaryService();
             string regUserEP = CommonEndpointStrings.RegisteredUserEndpoint;
             // Act
-            List<RegisteredUserDto> users = await oss.DeserializeDataIntoListOfClass<RegisteredUserDto>(regUserEP);
+            IList<RegisteredUserDto> users = await oss.DeserializeDataIntoListOfClass<RegisteredUserDto>(regUserEP);
             // Assert
             Assert.IsTrue(users != null);
 
@@ -47,7 +47,7 @@ namespace PrologMobileCQ.Tests
             var oss = new OrganizationSummaryService();
             string phoneNumEP = CommonEndpointStrings.PhoneInformationEndpoint;
             // Act
-            List<PhoneInformationDto> phoneInfo = await oss.DeserializeDataIntoListOfClass<PhoneInformationDto>(phoneNumEP);
+            IList<PhoneInformationDto> phoneInfo = await oss.DeserializeDataIntoListOfClass<PhoneInformationDto>(phoneNumEP);
             // Assert
             Assert.IsTrue(phoneInfo != null);
 

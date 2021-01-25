@@ -13,9 +13,9 @@ namespace PrologMobileCQ.Services.Classes
 {
     public class OrganizationSummaryService : IOrganizationSummaryService
     {
-        public async Task<List<T>> DeserializeDataIntoListOfClass<T>(string endpoint)
+        public async Task<IList<T>> DeserializeDataIntoListOfClass<T>(string endpoint)
         {
-            List<T> organizationList = new List<T>();
+            IList<T> organizationList = new List<T>();
             using (var httpClient = new HttpClient())
             {
                 using (var response = await httpClient.GetAsync(endpoint))
@@ -26,7 +26,7 @@ namespace PrologMobileCQ.Services.Classes
             }
             return organizationList;
         }
-        public async Task ReturnASummaryForEachOrganization()
+        public async Task<IList<SummaryForEachOrganizationDto>> ReturnASummaryForEachOrganization()
         {
             // Fetch the data.
             string authFundAPI = CommonEndpointStrings.AuthFundEndpoint;
@@ -36,7 +36,7 @@ namespace PrologMobileCQ.Services.Classes
             var regUserList = await DeserializeDataIntoListOfClass<RegisteredUserDto>(regUserAPI);
             var phoneInformationList = await DeserializeDataIntoListOfClass<PhoneInformationDto>(userBlackListAPI);
 
-            List<SummaryForEachOrganizationDto> summarize = new List<SummaryForEachOrganizationDto>();
+            IList<SummaryForEachOrganizationDto> summarize = new List<SummaryForEachOrganizationDto>();
             foreach (var org in organizationList)
             {
                 SummaryForEachOrganizationDto tmp = new SummaryForEachOrganizationDto();
@@ -68,6 +68,7 @@ namespace PrologMobileCQ.Services.Classes
 
                 summarize.Add(tmp);
             }
+            return summarize;
         }
     }
 }

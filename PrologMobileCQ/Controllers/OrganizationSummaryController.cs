@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PrologMobileCQ.Models.DTOs;
 using PrologMobileCQ.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,19 @@ namespace PrologMobileCQ.Controllers
             _logger = logger;
         }
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<IList<SummaryForEachOrganizationDto>>> Get()
         {
-            await _organizationSummaryService.ReturnASummaryForEachOrganization();
-            return View();
+            try
+            {
+                IList<SummaryForEachOrganizationDto> summaries = await _organizationSummaryService.ReturnASummaryForEachOrganization();
+                return Ok(summaries);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                _logger.LogError(ex.InnerException.Message.ToString());
+                return BadRequest(ex.InnerException.Message.ToString());
+            }
         }
     }
 }
