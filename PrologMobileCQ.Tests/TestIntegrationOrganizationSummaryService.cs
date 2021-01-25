@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using PrologMobileCQ.Models.DTOs;
 using PrologMobileCQ.Services.Classes;
+using PrologMobileCQ.Util;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,8 +15,9 @@ namespace PrologMobileCQ.Tests
             // Arrange
             const int EMPTY = 0;
             var oss = new OrganizationSummaryService();
+            string authFundEP = CommonEndpointStrings.AuthFundEndpoint;
             // Act
-            List<OrganizationDto> organizations = await oss.DeserializeDataIntoListOfClass<OrganizationDto>("https://5f0ddbee704cdf0016eaea16.mockapi.io/organizations");
+            List<OrganizationDto> organizations = await oss.DeserializeDataIntoListOfClass<OrganizationDto>(authFundEP);
             // Assert
             Assert.IsTrue(organizations != null);
 
@@ -28,8 +30,9 @@ namespace PrologMobileCQ.Tests
             // Arrange
             const int EMPTY = 0;
             var oss = new OrganizationSummaryService();
+            string regUserEP = CommonEndpointStrings.RegisteredUserEndpoint;
             // Act
-            List<RegisteredUserDto> users = await oss.DeserializeDataIntoListOfClass<RegisteredUserDto>("https://5f0ddbee704cdf0016eaea16.mockapi.io/organizations/1/users");
+            List<RegisteredUserDto> users = await oss.DeserializeDataIntoListOfClass<RegisteredUserDto>(regUserEP);
             // Assert
             Assert.IsTrue(users != null);
 
@@ -42,8 +45,9 @@ namespace PrologMobileCQ.Tests
             // Arrange
             const int EMPTY = 0;
             var oss = new OrganizationSummaryService();
+            string phoneNumEP = CommonEndpointStrings.PhoneInformationEndpoint;
             // Act
-            List<PhoneInformationDto> phoneInfo = await oss.DeserializeDataIntoListOfClass<PhoneInformationDto>("https://5f0ddbee704cdf0016eaea16.mockapi.io/organizations/1/users/1/phones");
+            List<PhoneInformationDto> phoneInfo = await oss.DeserializeDataIntoListOfClass<PhoneInformationDto>(phoneNumEP);
             // Assert
             Assert.IsTrue(phoneInfo != null);
 

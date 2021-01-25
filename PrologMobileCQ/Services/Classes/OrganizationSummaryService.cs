@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PrologMobileCQ.Models.DTOs;
 using PrologMobileCQ.Services.Interfaces;
+using PrologMobileCQ.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,15 @@ namespace PrologMobileCQ.Services.Classes
                 }
             }
             return organizationList;
+        }
+        public async Task ReturnASummaryForEachOrganization()
+        {
+            // Fetch the data.
+            string authFundAPI = CommonEndpointStrings.AuthFundEndpoint;
+            string regUserAPI = CommonEndpointStrings.RegisteredUserEndpoint;
+            string userBlackListAPI = CommonEndpointStrings.PhoneInformationEndpoint;
+            var authFundOrgs = DeserializeDataIntoListOfClass<OrganizationDto>(authFundAPI);
+         //   var regUserOrgs = 
         }
     }
 }
