@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PrologMobileCQ.Models.DTOs;
 using PrologMobileCQ.Models.Other;
 using PrologMobileCQ.Services.Interfaces;
@@ -13,62 +14,134 @@ namespace PrologMobileCQ.Services.Classes
 {
     public class OrganizationSummaryService : IOrganizationSummaryService
     {
+        private readonly ILogger<OrganizationSummaryService> _logger;
+        public OrganizationSummaryService(ILogger<OrganizationSummaryService> logger)
+        {
+            _logger = logger;
+        }
         public async Task<IList<T>> DeserializeDataIntoListOfClass<T>(string endpoint)
         {
-            IList<T> organizationList = new List<T>();
-            using (var httpClient = new HttpClient())
+            try
             {
-                using (var response = await httpClient.GetAsync(endpoint))
+                IList<T> organizationList = new List<T>();
+                using (var httpClient = new HttpClient())
                 {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    organizationList = JsonConvert.DeserializeObject<List<T>>(apiResponse);
+                    using (var response = await httpClient.GetAsync(endpoint))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        organizationList = JsonConvert.DeserializeObject<List<T>>(apiResponse);
+                    }
                 }
+                return organizationList;
             }
-            return organizationList;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                _logger.LogError(ex.InnerException.Message.ToString());
+                throw;
+            }
         }
         public async Task<IList<SummaryForEachOrganizationDto>> ReturnASummaryForEachOrganization()
         {
-            // Fetch the data.
-            string authFundAPI = CommonEndpointStrings.AuthFundEndpoint;
-            string regUserAPI = CommonEndpointStrings.RegisteredUserEndpoint;
-            string userBlackListAPI = CommonEndpointStrings.PhoneInformationEndpoint;
-            var organizationList = await DeserializeDataIntoListOfClass<OrganizationDto>(authFundAPI);
-            var regUserList = await DeserializeDataIntoListOfClass<RegisteredUserDto>(regUserAPI);
-            var phoneInformationList = await DeserializeDataIntoListOfClass<PhoneInformationDto>(userBlackListAPI);
-
-            IList<SummaryForEachOrganizationDto> summarize = new List<SummaryForEachOrganizationDto>();
-            foreach (var org in organizationList)
+            try
             {
-                SummaryForEachOrganizationDto tmp = new SummaryForEachOrganizationDto();
-                tmp.ID = org.ID;
-                tmp.Name = org.Name;
-                tmp.BlacklistTotal = (from regUser in regUserList
-                                      join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
-                                      where regUser.OrganizationID == org.ID && phoneInfo.Blacklist == true
-                                      select new { ID = regUser.ID}).ToList().Count().ToString();
-                tmp.TotalCount = (from regUser in regUserList
-                                  join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
-                                  where regUser.OrganizationID == org.ID
-                                  select new { ID = regUser.ID }).ToList().Count().ToString();
-                tmp.Users = 
-                               
-                             (from regUser in regUserList
-                             join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
-                             where regUser.OrganizationID == org.ID
-                             // PHONE count is gonna be a subquery
-                             select new { ID = regUser.ID, Email = regUser.Email, PhoneIMEI = phoneInfo.IMEI })
-                             .ToList().GroupBy(a => new { a.ID, a.Email })
-                             .Select(x => new UserSummaryDto
-                             {
-                                 ID = x.Key.ID,
-                                 Email = x.Key.Email,
-                                 PhoneCount = x.Select(z => z.PhoneIMEI).Distinct().Count()
-                             }).ToList();
+                // Fetch the data.
+                string authFundAPI = CommonEndpointStrings.AuthFundEndpoint;
+                string regUserAPI = CommonEndpointStrings.RegisteredUserEndpoint;
+                string userBlackListAPI = CommonEndpointStrings.PhoneInformationEndpoint;
+                var organizationList = await DeserializeDataIntoListOfClass<OrganizationDto>(authFundAPI);
+                var regUserList = await DeserializeDataIntoListOfClass<RegisteredUserDto>(regUserAPI);
+                var phoneInformationList = await DeserializeDataIntoListOfClass<PhoneInformationDto>(userBlackListAPI);
 
-
-                summarize.Add(tmp);
+                return CreateSummaryForEachOrganization(organizationList, regUserList, phoneInformationList);
             }
-            return summarize;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                _logger.LogError(ex.InnerException.Message.ToString());
+                throw;
+            }
+        }
+        public IList<SummaryForEachOrganizationDto> CreateSummaryForEachOrganization(IList<OrganizationDto> organizationList, IList<RegisteredUserDto> regUserList, IList<PhoneInformationDto> phoneInformationList)
+        {
+            try
+            {
+                IList<SummaryForEachOrganizationDto> summarize = new List<SummaryForEachOrganizationDto>();
+                foreach (var org in organizationList)
+                {
+                    SummaryForEachOrganizationDto tmp = new SummaryForEachOrganizationDto();
+                    tmp.ID = org.ID;
+                    tmp.Name = org.Name;
+                    tmp.BlacklistTotal = GenerateBlacklistTotal(org.ID, regUserList, phoneInformationList);
+                    tmp.TotalCount = GenerateTotalCount(org.ID, regUserList, phoneInformationList);
+                    tmp.Users = GenerateUsers(org.ID, regUserList, phoneInformationList);
+
+                    summarize.Add(tmp);
+                }
+                return summarize;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                _logger.LogError(ex.InnerException.Message.ToString());
+                throw;
+            }
+        }
+        public string GenerateBlacklistTotal(string organizationID, IList<RegisteredUserDto> regUserList, IList<PhoneInformationDto> phoneInformationList)
+        {
+            try
+            {
+                return (from regUser in regUserList
+                        join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
+                        where regUser.OrganizationID == organizationID && phoneInfo.Blacklist == true
+                        select new { ID = regUser.ID }).ToList().Count().ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                _logger.LogError(ex.InnerException.Message.ToString());
+                throw;
+            }
+        }
+        public string GenerateTotalCount(string organizationID, IList<RegisteredUserDto> regUserList, IList<PhoneInformationDto> phoneInformationList)
+        {
+            try
+            {
+                return (from regUser in regUserList
+                        join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
+                        where regUser.OrganizationID == organizationID
+                        select new { ID = regUser.ID }).ToList().Count().ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                _logger.LogError(ex.InnerException.Message.ToString());
+                throw;
+            }
+        }
+        public List<UserSummaryDto> GenerateUsers(string organizationID, IList<RegisteredUserDto> regUserList, IList<PhoneInformationDto> phoneInformationList)
+        {
+            try
+            {
+                return (from regUser in regUserList
+                        join phoneInfo in phoneInformationList on regUser.ID equals phoneInfo.UserID
+                        where regUser.OrganizationID == organizationID
+                        // PHONE count is gonna be a subquery
+                        select new { ID = regUser.ID, Email = regUser.Email, PhoneIMEI = phoneInfo.IMEI })
+                                 .ToList().GroupBy(a => new { a.ID, a.Email })
+                                 .Select(x => new UserSummaryDto
+                                 {
+                                     ID = x.Key.ID,
+                                     Email = x.Key.Email,
+                                     PhoneCount = x.Select(z => z.PhoneIMEI).Distinct().Count()
+                                 }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message.ToString());
+                _logger.LogError(ex.InnerException.Message.ToString());
+                throw;
+            }
         }
     }
 }

@@ -54,5 +54,20 @@ namespace PrologMobileCQ.Tests
             long dataCount = phoneInfo.Count;
             Assert.IsTrue(dataCount > EMPTY);
         }
+        [Test]
+        public async Task AssertEndpointWorks()
+        {
+            // Arrange
+            const int EMPTY = 0;
+            var oss = new OrganizationSummaryService();
+            string phoneNumEP = CommonEndpointStrings.PhoneInformationEndpoint;
+            // Act
+            IList<PhoneInformationDto> phoneInfo = await oss.DeserializeDataIntoListOfClass<PhoneInformationDto>(phoneNumEP);
+            // Assert
+            Assert.IsTrue(phoneInfo != null);
+
+            long dataCount = phoneInfo.Count;
+            Assert.IsTrue(dataCount > EMPTY);
+        }
     }
 }
